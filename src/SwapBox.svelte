@@ -8,12 +8,14 @@
     } from "./stores.js";
     import { writable, derived, get } from "svelte/store";
 
-    export let stableName;
+    export let from;
+    export let to;
+    let notOusd = from != 'OUSD' ? from : to
     export let flipMethod;
     export let isOpen = false;
 
-    const balance = flipperBalances["OUSD"];
-    $: userBalance = userBalances[stableName];
+    const balance = flipperBalances[to];
+    $: userBalance = userBalances[from];
     let available = derived(balance, (b) => {
         if (b === undefined) {
             return undefined;
@@ -39,31 +41,31 @@
 
 <div class="box">
     <img
-        src="images/{stableName.toLowerCase()}-radio-on.svg"
+        src="images/{notOusd.toLowerCase()}-radio-on.svg"
         class="stableIcon"
-        alt={stableName}
+        alt={notOusd}
     />
 
     <p style="margin-top:4px">
-        Buy <strong>OUSD</strong> for <strong>{stableName}</strong>
+        Get <strong>{to}</strong> spending <strong>{from}</strong>
     </p>
     <p>
         {#if $available}
-            <strong>{$available.toLocaleString("en")} OUSD</strong> available.
+            <strong>{$available.toLocaleString("en")} {to}</strong> available.
         {/if}
         No slippage. {#if $txGasCost}${$txGasCost}{:else}Low{/if} gas.
     </p>
 
     {#if parseInt($userBalance) > 1}
             <p>You have <strong> {parseInt($userBalance).toLocaleString("en")} 
-            {stableName}</strong>.</p>
+            {from}</strong>.</p>
         {:else if parseInt($userBalance) < 20}
-            <p>You don't have enough {stableName}.</p>
+            <p>You don't have enough {from}.</p>
         {/if}
 
     {#if !isOpen}
         <div style="text-align: right;">
-            <button on:click={clickOpen}>Get OUSD</button>
+            <button on:click={clickOpen}>Get {to}</button>
         </div>
     {:else}
 
@@ -71,17 +73,17 @@
             <tr>
                 <td>Get</td>
                 <td><input bind:value={amount} /> </td>
-                <td><strong>OUSD</strong></td>
+                <td><strong>{to}</strong></td>
             </tr>
             <tr>
                 <td>Pay</td>
                 <td><input bind:value={amount} /> </td>
-                <td><strong>{stableName}</strong></td>
+                <td><strong>{from}</strong></td>
             </tr>
         </table>
         <Transaction
             {flipMethod}
-            approvalCoin={stableName}
+            approvalCoin={from}
             {amount}
             onComplete={afterBuy}
         />

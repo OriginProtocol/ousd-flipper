@@ -1,5 +1,5 @@
 <script>
-	import BuyBox from './BuyBox.svelte';
+	import SwapBox from './SwapBox.svelte';
 	import Connect from './Connect.svelte';
 	import {
         ousdBalance,
@@ -49,15 +49,15 @@
 	</div>
 
 	<div class="outerBox">
-		<BuyBox stableName="DAI"  flipMethod="buyOusdWithDai"/>
-		<BuyBox stableName="USDC" flipMethod="buyOusdWithUsdc"  />
-		<BuyBox stableName="USDT" flipMethod="buyOusdWithUsdt"/>
+		<SwapBox from="DAI"  to="OUSD" flipMethod="buyOusdWithDai"/>
+		<SwapBox from="USDC" to="OUSD" flipMethod="buyOusdWithUsdc"  />
+		<SwapBox from="USDT" to="OUSD" flipMethod="buyOusdWithUsdt"/>
 	</div>
 
 	<div class="outerBox">
-		<div class="box">Sell OUSD for DAI</div>
-		<div class="box">Sell OUSD for USDC</div>
-		<div class="box">Sell OUSD for USDT</div>
+		<SwapBox from="OUSD" to="DAI"  flipMethod="sellOusdForDai"/>
+		<SwapBox from="OUSD" to="USDC" flipMethod="sellOusdForUsdc"  />
+		<SwapBox from="OUSD" to="USDT" flipMethod="sellOusdForUsdt"/>
 	</div>
 
 
