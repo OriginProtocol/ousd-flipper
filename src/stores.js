@@ -4,7 +4,7 @@ import { ousd_abi } from "./interfaces/OUSD";
 import { flipper_abi } from "./interfaces/Flipper";
 import { chainlink_abi } from "./interfaces/Chainlink";
 
-const APY_URL = window.APY_URL || 'http://localhost:8000/api/v1/apr/history'
+const APY_URL = window.APY_URL || 'https://analytics.ousd.com/api/v1/apr/history'
 
 export const isConnected = writable(false);
 export const estTxCost = 90000;
