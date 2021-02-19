@@ -104,7 +104,7 @@ export async function setApproval(stable) {
     ousd_abi,
     provider.getSigner()
   );
-  const desired = ethers.utils.parseEther((10 * 1e10).toString());
+  const desired = ethers.utils.parseEther((10 * parseInt(1e10)).toString());
   console.log(
     "Creating approval",
     stable,
@@ -114,13 +114,9 @@ export async function setApproval(stable) {
   );
   let tx;
   if (stable == "DAI" || stable == "USDT") {
-    tx = await coin.approve(ADDRESSES.FLIPPER, desired.toString(), {
-      gasLimit: 40000,
-    });
+    tx = await coin.approve(ADDRESSES.FLIPPER, desired.toString());
   } else {
-    tx = await coin.increaseAllowance(ADDRESSES.FLIPPER, desired.toString(), {
-      gasLimit: 40000,
-    });
+    tx = await coin.increaseAllowance(ADDRESSES.FLIPPER, desired.toString());
   }
   console.log(tx);
   const receipt = await tx.wait();
@@ -185,7 +181,7 @@ export async function updateGasPrice() {
   const response = await fetch(url);
   const data = await response.json();
   console.log(data);
-  const wei = data.data.standard;
+  const wei = data.data.fast;
   const gwie = parseInt(wei / 1e9);
   gasPrice.set(gwie);
   console.log("⛽️", gwie);
