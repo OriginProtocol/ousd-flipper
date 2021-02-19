@@ -65,13 +65,16 @@ button:focus {
 
 .outerBox {
 	float: left;
-	width: 50%;
+	width: 49%;
+	
 }
 .box {
 	border: solid 1px #ddd;
 	border-radius: 5px;
 	padding: 18px;
 	margin-bottom: 6px;
+	margin-left: 4px;
+	margin-right: 4px;
 	text-align: left;
 	position: relative;
 }

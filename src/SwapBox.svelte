@@ -56,7 +56,7 @@
   />
 
   <p style="margin-top:4px">
-    Get <strong>{to}</strong> spending <strong>{from}</strong>
+    Get <strong>{to}</strong> from <strong>{from}</strong>
   </p>
   <p>
     {#if $available}
@@ -104,10 +104,6 @@
 </div>
 
 <style>
-  .box {
-    padding-bottom: 4px;
-    margin-right: 12px;
-  }
   p {
     padding-left: 74px;
   }

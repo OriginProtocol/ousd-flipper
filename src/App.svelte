@@ -1,46 +1,48 @@
 <script>
-	import SwapBox from './SwapBox.svelte';
-	import Connect from './Connect.svelte';
-	import {
-        ousdBalance,
-    } from "./stores.js";
+	import SwapBox from "./SwapBox.svelte";
+	import Connect from "./Connect.svelte";
+	import Apy from "./Apy.svelte";
+	import { ousdBalance } from "./stores.js";
 
-	let oldOusdBalance = undefined
-	let ousdBalanceClass = "static"
-	ousdBalance.subscribe((x)=>{
-		if(oldOusdBalance == undefined || x == oldOusdBalance){
-			oldOusdBalance = x
-			return
+	let oldOusdBalance = undefined;
+	let ousdBalanceClass = "static";
+	ousdBalance.subscribe((x) => {
+		if (oldOusdBalance == undefined || x == oldOusdBalance) {
+			oldOusdBalance = x;
+			return;
 		}
-		
-		ousdBalanceClass = "changed"
-		setTimeout(function(){
-			ousdBalanceClass = "static"
-		}, 1000)
-		window.scroll(0,0)
-		
-		oldOusdBalance = x
-	})
-	
+
+		ousdBalanceClass = "changed";
+		setTimeout(function () {
+			ousdBalanceClass = "static";
+		}, 1000);
+		window.scroll(0, 0);
+
+		oldOusdBalance = x;
+	});
 </script>
 
 <main>
-	<h1>OUSD</h1>
+	<h1>OUSD Swap</h1>
 
-	<div style="text-align:right">
-		<Connect/>
-	</div>
-	
+  
 
-	<hr>
+	<Connect />
+
+  <div style="clear:both"></div>
 
 	<div class="outerBox">
-		<div class="box">APY History</div>
+		<div class="box">
+			<Apy />
+		</div>
 	</div>
+
 	<div class="outerBox">
 		<div class="box {ousdBalanceClass}">
 			{#if $ousdBalance}
-				<div style="font-size:56px; text-align:center">{parseInt($ousdBalance).toLocaleString("en")} OUSD</div>
+				<div style="font-size:56px; text-align:center">
+					{parseInt($ousdBalance).toLocaleString("en")} OUSD
+				</div>
 				<div style="text-align:center">Your Balance</div>
 			{:else}
 				...
@@ -48,21 +50,17 @@
 		</div>
 	</div>
 
-	<div class="outerBox">
-		<SwapBox from="DAI"  to="OUSD" flipMethod="buyOusdWithDai"/>
-		<SwapBox from="USDC" to="OUSD" flipMethod="buyOusdWithUsdc"  />
-		<SwapBox from="USDT" to="OUSD" flipMethod="buyOusdWithUsdt"/>
+	<div class="outerBox" style="clear:both">
+		<SwapBox from="DAI" to="OUSD" flipMethod="buyOusdWithDai" />
+		<SwapBox from="USDC" to="OUSD" flipMethod="buyOusdWithUsdc" />
+		<SwapBox from="USDT" to="OUSD" flipMethod="buyOusdWithUsdt" />
 	</div>
 
 	<div class="outerBox">
-		<SwapBox from="OUSD" to="DAI"  flipMethod="sellOusdForDai"/>
-		<SwapBox from="OUSD" to="USDC" flipMethod="sellOusdForUsdc"  />
-		<SwapBox from="OUSD" to="USDT" flipMethod="sellOusdForUsdt"/>
+		<SwapBox from="OUSD" to="DAI" flipMethod="sellOusdForDai" />
+		<SwapBox from="OUSD" to="USDC" flipMethod="sellOusdForUsdc" />
+		<SwapBox from="OUSD" to="USDT" flipMethod="sellOusdForUsdt" />
 	</div>
-
-
-
-
 </main>
 
 <style>
@@ -76,13 +74,12 @@
 	.box.static {
 		background-color: rgb(255, 255, 255);
 		transition: all 3s ease;
-  		-webkit-transition: all 3s ease;
+		-webkit-transition: all 3s ease;
 	}
 
 	.box.changed {
 		background-color: rgb(240, 253, 116);
 	}
-	
 
 	h1 {
 		color: #ff3e00;

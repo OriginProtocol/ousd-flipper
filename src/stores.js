@@ -4,6 +4,8 @@ import { ousd_abi } from "./interfaces/OUSD";
 import { flipper_abi } from "./interfaces/Flipper";
 import { chainlink_abi } from "./interfaces/Chainlink";
 
+const APY_URL = window.APY_URL || 'http://localhost:8000/api/v1/apr/history'
+
 export const isConnected = writable(false);
 export const estTxCost = 90000;
 export const maxFlip = 25000;
@@ -34,6 +36,7 @@ export const txGasCost = derived([gasPrice, ethPrice], (data) => {
   }
   return parseInt((estTxCost * data[0] * data[1]) / 1e9);
 });
+export const apyData = writable(undefined)
 
 let provider;
 
@@ -189,6 +192,14 @@ export async function updateGasPrice() {
   console.log("⛽️", gwie);
 }
 
+export async function updateApy() {
+  const url = APY_URL;
+  const response = await fetch(url);
+  const data = await response.json();
+  apyData.set(data)
+  console.log("📈", data);
+}
+
 export async function updateEthPrice() {
   const chainlink = new ethers.Contract(
     ADDRESSES.CHAINLINK_ETH_USD,
@@ -214,3 +225,4 @@ isConnected.subscribe((hasCon) => {
 checkConnect();
 updateGasPrice();
 updateEthPrice();
+updateApy();
