@@ -157,8 +157,7 @@ export async function connectWallet() {
     const accounts = await ethereum.request({
       method: "eth_requestAccounts",
     });
-    isConnected.set(true);
-    location.e();
+    setTimeout(() => isConnected.set(true), 250)
   } catch (e) {
     console.error(e);
     isConnected.set(false);
@@ -201,6 +200,9 @@ export async function updateApy() {
 }
 
 export async function updateEthPrice() {
+  if (provider == undefined) {
+    return
+  }
   const chainlink = new ethers.Contract(
     ADDRESSES.CHAINLINK_ETH_USD,
     chainlink_abi,
@@ -212,13 +214,25 @@ export async function updateEthPrice() {
   ethPrice.set(parseInt(price));
 }
 
-let _IS_CONNECTED = false;
+let _WAS_CONNECTED = false;
 isConnected.subscribe((hasCon) => {
-  if (hasCon && !_IS_CONNECTED) {
+  if (hasCon && !_WAS_CONNECTED) {
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+
+    console.log("After connect update")
     updateFlipperBalances();
     updateUserBalances();
     updateAllowances();
-    _IS_CONNECTED = true;
+    updateEthPrice()
+
+    setTimeout(() => {
+      console.log("Delayed update")
+      updateFlipperBalances();
+      updateUserBalances();
+      updateAllowances();
+      updateEthPrice()
+    }, 1000)
+    _WAS_CONNECTED = true;
   }
 });
 
