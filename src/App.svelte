@@ -45,7 +45,7 @@
 				</div>
 				<div style="text-align:center">Your Balance</div>
 			{:else}
-				...
+				Connect to view balances
 			{/if}
 		</div>
 	</div>
@@ -67,7 +67,7 @@
 	main {
 		text-align: center;
 		padding: 1em;
-		max-width: 240px;
+		max-width: 640px;
 		margin: 0 auto;
 	}
 

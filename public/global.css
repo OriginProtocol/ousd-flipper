@@ -68,6 +68,12 @@ button:focus {
 	width: 49%;
 	
 }
+@media (max-width: 900px) {
+	.outerBox {
+		float: left;
+		width: 100%;	
+	}	
+}
 .box {
 	border: solid 1px #ddd;
 	border-radius: 5px;
