@@ -27,7 +27,7 @@
 
   
 
-	<Connect />
+	
 
   <div style="clear:both"></div>
 
@@ -38,14 +38,17 @@
 	</div>
 
 	<div class="outerBox">
-		<div class="box {ousdBalanceClass}">
+		<div class="box center {ousdBalanceClass}">
 			{#if $ousdBalance}
 				<div style="font-size:56px; text-align:center">
 					{parseInt($ousdBalance).toLocaleString("en")} OUSD
 				</div>
 				<div style="text-align:center">Your Balance</div>
 			{:else}
-				Connect to view balances
+				<div style="text-align:center">
+					<p style="text-align:center">Connect to view your OUSD Balance.</p>
+					<Connect />
+				</div>
 			{/if}
 		</div>
 	</div>
@@ -92,5 +95,10 @@
 		main {
 			max-width: none;
 		}
+	}
+	.center {
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 </style>
