@@ -1,5 +1,6 @@
 <script>
   import { get } from "svelte/store";
+  import Spinner from "./Spinner.svelte";
 
   import {
     isConnected,
@@ -20,12 +21,12 @@
   $: allowance = userAllowances[approvalCoin];
   let userBalance = userBalances[approvalCoin];
   let flipperBalance = flipperBalances[to];
+  let isLoadingApproval = false;
+  let isLoadingFlip = false;
 
   $: amountUnderMax = parseInt(amount) <= 25000;
   $: amountOverMin = parseInt(amount) >= 1;
   $: amountUnderFlipper = parseInt(amount) <= get(flipperBalance);
-  $: bob = get(flipperBalance);
-  $: anne = parseInt(amount);
   $: userHas = parseInt(amount) <= parseInt(get(userBalances[approvalCoin]));
 
   console.log($userBalance);
@@ -35,11 +36,18 @@
   }
 
   async function approve() {
-    await setApproval(approvalCoin);
+    const tx = await setApproval(approvalCoin);
+    isLoadingApproval = true;
+    await tx.waitForTransaction();
   }
 
   async function buy() {
-    await flip(flipMethod, amount);
+    const tx = await flip(flipMethod, amount);
+    isLoadingFlip = true;
+    await tx.waitForTransaction();
+    setTimeout(() => {
+      isLoadingFlip = false;
+    }, 500);
     await onComplete();
   }
 </script>
@@ -74,8 +82,13 @@
       {:else}
         <li>
           <button on:click={approve}
-            >2. 🔴 Approve {approvalCoin} Transfer</button
-          >
+            >2.
+            {#if isLoadingApproval}
+              <Spinner /> Approving...
+            {:else}
+              🔴 Approve {approvalCoin} Transfer
+            {/if}
+          </button>
         </li>
       {/if}
       {#if !(parseInt($allowance) > parseInt(amount)) || !$isConnected}
@@ -83,7 +96,14 @@
       {:else if !amountUnderMax || !amountOverMin || !userHas}
         <li>3. <button disabled>Swap!</button></li>
       {:else}
-        <li>3. <button on:click={buy}>Swap!</button></li>
+        <li>
+          3.
+          {#if isLoadingFlip}
+            <button on:click={buy}><Spinner /> Swappping...</button>
+          {:else}
+            <button on:click={buy}>Swap!</button>
+          {/if}
+        </li>
       {/if}
     {/if}
   </ul>

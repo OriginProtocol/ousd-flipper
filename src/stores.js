@@ -4,7 +4,8 @@ import { ousd_abi } from "./interfaces/OUSD";
 import { flipper_abi } from "./interfaces/Flipper";
 import { chainlink_abi } from "./interfaces/Chainlink";
 
-const APY_URL = window.APY_URL || 'https://analytics.ousd.com/api/v1/apr/history'
+const APY_URL =
+  window.APY_URL || "https://analytics.ousd.com/api/v1/apr/history";
 
 export const isConnected = writable(false);
 export const estTxCost = 90000;
@@ -36,7 +37,7 @@ export const txGasCost = derived([gasPrice, ethPrice], (data) => {
   }
   return parseInt((estTxCost * data[0] * data[1]) / 1e9);
 });
-export const apyData = writable(undefined)
+export const apyData = writable(undefined);
 
 let provider;
 
@@ -99,6 +100,7 @@ async function updateAllowances() {
 }
 
 export async function setApproval(stable) {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
   const coin = new ethers.Contract(
     ADDRESSES[stable],
     ousd_abi,
@@ -113,35 +115,45 @@ export async function setApproval(stable) {
     desired.toString()
   );
   let tx;
-  if (stable == "DAI" || stable == "USDT") {
-    tx = await coin.approve(ADDRESSES.FLIPPER, desired.toString());
-  } else {
-    tx = await coin.increaseAllowance(ADDRESSES.FLIPPER, desired.toString());
-  }
-  console.log(tx);
-  const receipt = await tx.wait();
-  console.log(receipt);
-  console.log("--");
-  updateAllowances();
-  setTimeout(updateAllowances, 3000);
-  setTimeout(updateAllowances, 30000);
+  tx = await coin.approve(ADDRESSES.FLIPPER, desired.toString());
+
+  const doneFn = async function () {
+    console.log(tx);
+    await provider.waitForTransaction(tx.hash);
+    const receipt = await tx.wait();
+    console.log(receipt);
+    console.log("---");
+    console.log("---");
+    updateAllowances();
+    setTimeout(updateAllowances, 3000);
+    setTimeout(updateAllowances, 30000);
+  };
+  tx.waitForTransaction = doneFn;
+  return tx;
 }
 
 export async function flip(method, amountUsd) {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner().connectUnchecked();
   const flipper = new ethers.Contract(ADDRESSES.FLIPPER, flipper_abi, signer);
   const amount = ethers.utils.parseEther(amountUsd.toString());
   const tx = await flipper[method](amount.toString());
-  console.log("Submitted");
-  const receipt = await tx.wait();
-  console.log("Mined");
-  console.log(receipt);
-  updateFlipperBalances();
-  updateUserBalances();
-  setTimeout(updateFlipperBalances, 3000);
-  setTimeout(updateFlipperBalances, 30000);
-  setTimeout(updateUserBalances, 3000);
-  setTimeout(updateUserBalances, 30000);
+
+  const doneFn = async function () {
+    await provider.waitForTransaction(tx.hash);
+    console.log("Submitted");
+    const receipt = await tx.wait();
+    console.log("Mined");
+    console.log(receipt);
+    updateFlipperBalances();
+    updateUserBalances();
+    setTimeout(updateFlipperBalances, 3000);
+    setTimeout(updateFlipperBalances, 30000);
+    setTimeout(updateUserBalances, 3000);
+    setTimeout(updateUserBalances, 30000);
+  };
+  tx.waitForTransaction = doneFn;
+  return tx;
 }
 
 export async function connectWallet() {
@@ -153,7 +165,7 @@ export async function connectWallet() {
     const accounts = await ethereum.request({
       method: "eth_requestAccounts",
     });
-    setTimeout(() => isConnected.set(true), 250)
+    setTimeout(() => isConnected.set(true), 250);
   } catch (e) {
     console.error(e);
     isConnected.set(false);
@@ -191,13 +203,13 @@ export async function updateApy() {
   const url = APY_URL;
   const response = await fetch(url);
   const data = await response.json();
-  apyData.set(data)
+  apyData.set(data);
   console.log("📈", data);
 }
 
 export async function updateEthPrice() {
   if (provider == undefined) {
-    return
+    return;
   }
   const chainlink = new ethers.Contract(
     ADDRESSES.CHAINLINK_ETH_USD,
@@ -215,22 +227,26 @@ isConnected.subscribe((hasCon) => {
   if (hasCon && !_WAS_CONNECTED) {
     provider = new ethers.providers.Web3Provider(window.ethereum);
 
-    console.log("After connect update")
+    console.log("After connect update");
     updateFlipperBalances();
     updateUserBalances();
     updateAllowances();
-    updateEthPrice()
+    updateEthPrice();
 
     setTimeout(() => {
-      console.log("Delayed update")
+      console.log("Delayed update");
       updateFlipperBalances();
       updateUserBalances();
       updateAllowances();
-      updateEthPrice()
-    }, 1000)
+      updateEthPrice();
+    }, 1000);
     _WAS_CONNECTED = true;
   }
 });
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 checkConnect();
 updateGasPrice();
