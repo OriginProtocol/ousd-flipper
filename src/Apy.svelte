@@ -16,7 +16,7 @@
       </tr>
       <tr>
         {#each [...$apyData.daily].reverse() as day}
-          <td style="text-align:center">&nbsp;{parseInt(day.apy + 0.5)}%</td>
+          <td style="text-align:center" class="smaller-mobile">&nbsp;{parseInt(day.apy + 0.5)}%</td>
         {/each}
       </tr>
     </table>
